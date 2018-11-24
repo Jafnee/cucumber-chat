@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cucumber Chat</title>
+</head>
+<body>
+  <h1>Cucumber Chat</h1>
+  <input type="text" name="username" id="username">
+  <input type="text" name="message" id="message">
+  <button type="button" id="send">Send</button>
+  <section id="messages"></section>
+  <script>
+    const jDumps = JSON.stringify
+    const jLoads = JSON.parse
+    const ws = new WebSocket('ws://localhost:8080')
+
+    const username = document.getElementById('username')
+    const message = document.getElementById('message')
+    const send = document.getElementById('send')
+    const messages = document.getElementById('messages')
+
+    send.addEventListener('click', () => {
+      ws.send(jDumps({
+        "username": username.value,
+        "message": message.value,
+      }))
+    })
+
+    ws.onmessage = event => {
+      console.log(event)
+      const {username, message} = jLoads(event.data)
+      messages.innerHTML += `<p>${username}: ${message}<p>`
+    }
+  </script>
+</body>
+</html>

@@ -1,10 +1,12 @@
 import json
 import logging
 from uuid import uuid4
+import time
 
 import aiohttp
 from aiohttp import web
 from kafka import KafkaProducer
+from kafka.errors import NoBrokersAvailable
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -14,6 +16,13 @@ routes = web.RouteTableDef()
 
 websockets = {}
 
+while True:
+    try:
+        producer = KafkaProducer(bootstrap_servers='kafka:9092')
+        break
+    except NoBrokersAvailable:
+        print("Kafka no available :/")
+        time.sleep(3)
 
 @routes.get('/')
 async def websocket_handler(request):
@@ -24,7 +33,6 @@ async def websocket_handler(request):
     websockets[uid] = ws
     logger.debug("%s has connected", uid)
 
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
     async for msg in ws:
         logger.debug('%s new message', msg)
         if msg.type == aiohttp.WSMsgType.TEXT:

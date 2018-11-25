@@ -1,24 +1,46 @@
 version: '3'
+
+volumes:
+  cassandra_data: {}
+
 services:
   aiohttp:
     build: ./aiohttp
     ports:
       - "8080:8080"
-    links:
+    depends_on:
       - kafka
   mocker:
     build: ./mocker
-    links:
+    depends_on:
       - aiohttp
+  logger:
+    build: ./logger
+    depends_on:
+      - kafka
+      - cassandra
   web:
     build: ./web
     ports:
       - "80:80"
+    depends_on:
+      - aiohttp
   kafka:
-    image: spotify/kafka
+    image: "spotify/kafka"
     ports:
       - "2181:2181"
       - "9092:9092"
     environment:
       - ADVERTISED_HOSE=kafka
       - ADVERTISED_PORT=9092
+  cassandra:
+    image: "cassandra:3"
+    volumes:
+      - ./cassandra:/cucumber_chat
+      - cassandra_data:/var/lib/cassandra
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+      - "7199:7199"
+      - "9042:9042"
+      - "9160:9160"

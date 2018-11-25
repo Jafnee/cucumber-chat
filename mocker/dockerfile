@@ -1,0 +1,10 @@
+FROM python:3.7
+ENV PYTHONBUFFERED 1
+
+COPY ./requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt &&\
+    rm /requirements.txt
+COPY ./mocker.py /mocker.py
+EXPOSE 8080
+
+CMD python /mocker.py

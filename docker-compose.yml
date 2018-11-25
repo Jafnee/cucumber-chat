@@ -4,6 +4,10 @@ services:
     build: ./aiohttp
     ports:
       - "8080:8080"
+  mocker:
+    build: ./mocker
+    links:
+      - aiohttp
   web:
     build: ./web
     ports:

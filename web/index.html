@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Cucumber Chat</title>
+  <style>
+    #messages {
+      overflow-y: scroll;
+      max-height: 50vh;
+    }
+  </style>
 </head>
 <body>
   <h1>Cucumber Chat</h1>
@@ -33,6 +39,7 @@
       console.log(event)
       const {username, message} = jLoads(event.data)
       messages.innerHTML += `<p>${username}: ${message}<p>`
+      messages.scrollTop = messages.scrollHeight
     }
   </script>
 </body>

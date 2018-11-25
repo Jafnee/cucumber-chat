@@ -4,6 +4,8 @@ services:
     build: ./aiohttp
     ports:
       - "8080:8080"
+    links:
+      - kafka
   mocker:
     build: ./mocker
     links:
@@ -12,3 +14,11 @@ services:
     build: ./web
     ports:
       - "80:80"
+  kafka:
+    image: spotify/kafka
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      - ADVERTISED_HOSE=kafka
+      - ADVERTISED_PORT=9092

@@ -4,6 +4,7 @@ from uuid import uuid4
 
 import aiohttp
 from aiohttp import web
+from kafka import KafkaProducer
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -23,6 +24,7 @@ async def websocket_handler(request):
     websockets[uid] = ws
     logger.debug("%s has connected", uid)
 
+    producer = KafkaProducer(bootstrap_servers='kafka:9092')
     async for msg in ws:
         logger.debug('%s new message', msg)
         if msg.type == aiohttp.WSMsgType.TEXT:
@@ -32,6 +34,7 @@ async def websocket_handler(request):
                 continue
             for socket in websockets.values():
                 await socket.send_json(data)
+            producer.send('message', msg.data.encode('utf8'))
 
     del websockets[uid]
     print('websocket connection closed')
